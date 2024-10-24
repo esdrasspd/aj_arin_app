@@ -1,5 +1,5 @@
 class ApiConfig {
-  static const String BASE_URL = "http://ser44840-002-site5.ltempurl.com";
+  static const String BASE_URL = "https://ajarin-b.online";
   static const String registerClient = "/registroCliente";
   static const String loginApp = "/loginApp";
   static const String registerTicket = "/registroTicketApp";
@@ -7,4 +7,5 @@ class ApiConfig {
   static const String getReportById = "/listarTicketPorId";
   static const String updateReport = "/actualizarTicketPorId";
   static const String deleteReport = "/eliminarTicketPorId";
+  static const String getTerritories = "/obtenerTerritorios";
 }

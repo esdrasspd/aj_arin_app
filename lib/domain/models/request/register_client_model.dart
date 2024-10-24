@@ -7,6 +7,7 @@ class RegisterClientModel {
   final String numberPhone;
   final String password;
   final String confirmPassword;
+  final String deviceIdPushOtp;
 
   RegisterClientModel({
     required this.names,
@@ -17,6 +18,7 @@ class RegisterClientModel {
     required this.numberPhone,
     required this.password,
     required this.confirmPassword,
+    required this.deviceIdPushOtp,
   });
 
   Map<String, dynamic> toJson() {
@@ -27,7 +29,8 @@ class RegisterClientModel {
       'territorioId': residenceNeighborhood,
       'fechaNacimiento': birthDate,
       'numeroTelefono': numberPhone,
-      'password': password
+      'password': password,
+      'deviceIdPushOtp': deviceIdPushOtp,
     };
   }
 }

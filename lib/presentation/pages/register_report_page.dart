@@ -4,12 +4,12 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:permission_handler/permission_handler.dart';
-import 'package:tickets_app/data/datasource/ticket_datasource_impl.dart';
-import 'package:tickets_app/data/repositories/ticket_repository_impl.dart';
-import 'package:tickets_app/domain/models/request/register_ticket_model.dart';
-import 'package:tickets_app/domain/repositories/ticket_repository.dart';
-import 'package:tickets_app/presentation/widgets/build_text_field.dart';
-import 'package:tickets_app/presentation/widgets/custom_button.dart';
+import 'package:AjArin/data/datasource/ticket_datasource_impl.dart';
+import 'package:AjArin/data/repositories/ticket_repository_impl.dart';
+import 'package:AjArin/domain/models/request/register_ticket_model.dart';
+import 'package:AjArin/domain/repositories/ticket_repository.dart';
+import 'package:AjArin/presentation/widgets/build_text_field.dart';
+import 'package:AjArin/presentation/widgets/custom_button.dart';
 
 class RegisterReportPage extends StatefulWidget {
   final String dpi;
@@ -35,6 +35,8 @@ class _RegisterReportPageState extends State<RegisterReportPage> {
   File? _imageFile;
   LatLng? _currentPosition;
   GoogleMapController? _mapController;
+
+  bool _isLoading = false; // Variable para controlar el estado de carga
 
   late final TicketRepository _ticketRepository;
 
@@ -70,6 +72,48 @@ class _RegisterReportPageState extends State<RegisterReportPage> {
     return response.code;
   }
 
+  Future<void> _submitForm() async {
+    if (_formKey.currentState!.validate()) {
+      if (_imageFile == null) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Debes seleccionar al menos una imagen.'),
+          ),
+        );
+        return;
+      }
+
+      setState(() {
+        _isLoading = true; // Iniciar la animación de carga
+      });
+
+      String code = await _registerTicket();
+
+      setState(() {
+        _isLoading = false; // Detener la animación de carga
+      });
+
+      if (code == '200') {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Reporte registrado exitosamente'),
+            ),
+          );
+          Navigator.pop(context);
+        }
+      } else {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('Error: $code'),
+            ),
+          );
+        }
+      }
+    }
+  }
+
   Future<void> _getCurrentLocation() async {
     var status = await Permission.locationWhenInUse.status;
     if (!status.isGranted) {
@@ -94,7 +138,6 @@ class _RegisterReportPageState extends State<RegisterReportPage> {
 
     if (pickedFile != null) {
       setState(() {
-        // Verifica que no haya ya una imagen seleccionada
         if (_imageFile == null) {
           _imageFile = File(pickedFile.path);
         } else {
@@ -105,39 +148,6 @@ class _RegisterReportPageState extends State<RegisterReportPage> {
           );
         }
       });
-    }
-  }
-
-  Future<void> _submitForm() async {
-    if (_formKey.currentState!.validate()) {
-      if (_imageFile == null) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Debes seleccionar al menos una imagen.'),
-          ),
-        );
-        return;
-      }
-
-      String code = await _registerTicket();
-      if (code == '200') {
-        if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('Reporte registrado exitosamente'),
-            ),
-          );
-          Navigator.pop(context);
-        }
-      } else {
-        if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text('Error: $code'),
-            ),
-          );
-        }
-      }
     }
   }
 
@@ -162,115 +172,124 @@ class _RegisterReportPageState extends State<RegisterReportPage> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.grey[300],
-        title: Text('Nuevo Reporte - ${widget.descriptionTicket}'),
+        title: FittedBox(
+            fit: BoxFit.scaleDown,
+            child: Text('Nuevo Reporte - ${widget.descriptionTicket}')),
       ),
       backgroundColor: Colors.grey[300],
-      body: SingleChildScrollView(
-        child: SafeArea(
-          child: Center(
-            child: Form(
-              // Formulario envolviendo los campos
-              key: _formKey,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  BuildTextField(
-                    labelText: 'Título',
-                    controller: _titleController,
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return 'Por favor ingrese un título';
-                      } else if (value.length > 50) {
-                        return 'El título no puede exceder los 50 caracteres';
-                      }
-                      return null;
-                    },
-                  ),
-                  const SizedBox(height: 15),
-                  BuildTextField(
-                    labelText: 'Descripción',
-                    controller: _descriptionController,
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return 'Por favor ingrese una descripción';
-                      } else if (value.length > 250) {
-                        return 'La descripción no puede exceder los 250 caracteres';
-                      }
-                      return null;
-                    },
-                  ),
-                  const SizedBox(height: 15),
-                  const Text(
-                    'Ubicación del Incidente:',
-                    style: TextStyle(fontSize: 15),
-                  ),
-                  _currentPosition == null
-                      ? const Center(child: CircularProgressIndicator())
-                      : SizedBox(
-                          height: 300,
-                          child: GoogleMap(
-                            onMapCreated: _onMapCreated,
-                            initialCameraPosition: CameraPosition(
-                              target: _currentPosition!,
-                              zoom: 15,
-                            ),
-                            myLocationEnabled: true,
-                            onTap: (LatLng position) {
-                              setState(() {
-                                _currentPosition = position;
-                              });
-                            },
-                          ),
-                        ),
-                  const SizedBox(height: 16),
-                  BuildTextField(
-                    labelText: 'Referencia de ubicación',
-                    controller: _referenceController,
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return 'Por favor ingrese una referencia';
-                      } else if (value.length > 250) {
-                        return 'La referencia no puede exceder los 250 caracteres';
-                      }
-                      return null;
-                    },
-                  ),
-                  const SizedBox(height: 16),
-                  const Text(
-                    'Imagen del Incidente:',
-                    style: TextStyle(fontSize: 15),
-                  ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
+      body: Stack(
+        children: [
+          SingleChildScrollView(
+            child: SafeArea(
+              child: Center(
+                child: Form(
+                  key: _formKey,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      IconButton(
-                        icon: const Icon(Icons.camera_alt),
-                        onPressed: () => _pickImage(ImageSource.camera),
+                      BuildTextField(
+                        labelText: 'Título',
+                        controller: _titleController,
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return 'Por favor ingrese un título';
+                          } else if (value.length > 50) {
+                            return 'El título no puede exceder los 50 caracteres';
+                          }
+                          return null;
+                        },
                       ),
-                      IconButton(
-                        icon: const Icon(Icons.photo),
-                        onPressed: () => _pickImage(ImageSource.gallery),
+                      const SizedBox(height: 15),
+                      BuildTextField(
+                        labelText: 'Descripción',
+                        controller: _descriptionController,
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return 'Por favor ingrese una descripción';
+                          } else if (value.length > 250) {
+                            return 'La descripción no puede exceder los 250 caracteres';
+                          }
+                          return null;
+                        },
+                      ),
+                      const SizedBox(height: 15),
+                      const Text(
+                        'Ubicación del Incidente:',
+                        style: TextStyle(fontSize: 15),
+                      ),
+                      _currentPosition == null
+                          ? const Center(child: CircularProgressIndicator())
+                          : SizedBox(
+                              height: 300,
+                              child: GoogleMap(
+                                onMapCreated: _onMapCreated,
+                                initialCameraPosition: CameraPosition(
+                                  target: _currentPosition!,
+                                  zoom: 15,
+                                ),
+                                myLocationEnabled: true,
+                                onTap: (LatLng position) {
+                                  setState(() {
+                                    _currentPosition = position;
+                                  });
+                                },
+                              ),
+                            ),
+                      const SizedBox(height: 16),
+                      BuildTextField(
+                        labelText: 'Referencia de ubicación',
+                        controller: _referenceController,
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return 'Por favor ingrese una referencia';
+                          } else if (value.length > 250) {
+                            return 'La referencia no puede exceder los 250 caracteres';
+                          }
+                          return null;
+                        },
+                      ),
+                      const SizedBox(height: 16),
+                      const Text(
+                        'Imagen del Incidente:',
+                        style: TextStyle(fontSize: 15),
+                      ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          IconButton(
+                            icon: const Icon(Icons.camera_alt),
+                            onPressed: () => _pickImage(ImageSource.camera),
+                          ),
+                          IconButton(
+                            icon: const Icon(Icons.photo),
+                            onPressed: () => _pickImage(ImageSource.gallery),
+                          ),
+                        ],
+                      ),
+                      _imageFile == null
+                          ? const Text('No se ha seleccionado imagen.')
+                          : Image.file(
+                              _imageFile!,
+                              height: 150,
+                            ),
+                      const SizedBox(height: 20),
+                      CustomButton(
+                        onTap: () async {
+                          await _submitForm();
+                        },
+                        buttonText: 'Registrar reporte',
                       ),
                     ],
                   ),
-                  _imageFile == null
-                      ? const Text('No se ha seleccionado imagen.')
-                      : Image.file(
-                          _imageFile!,
-                          height: 150,
-                        ),
-                  const SizedBox(height: 20),
-                  CustomButton(
-                    onTap: () async {
-                      await _submitForm();
-                    },
-                    buttonText: 'Registrar reporte',
-                  ),
-                ],
+                ),
               ),
             ),
           ),
-        ),
+          if (_isLoading) // Mostrar el indicador de carga mientras _isLoading es true
+            Center(
+              child: CircularProgressIndicator(),
+            ),
+        ],
       ),
     );
   }

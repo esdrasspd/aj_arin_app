@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:tickets_app/data/datasource/login_datasource_impl.dart';
-import 'package:tickets_app/data/repositories/login_repository_impl.dart';
-import 'package:tickets_app/domain/models/request/login_model.dart';
-import 'package:tickets_app/domain/repositories/login_repository.dart';
-import 'package:tickets_app/presentation/pages/dashboard_page.dart';
-import 'package:tickets_app/presentation/pages/register_page.dart';
-import 'package:tickets_app/presentation/widgets/build_text_field.dart';
+import 'package:AjArin/data/datasource/login_datasource_impl.dart';
+import 'package:AjArin/data/repositories/login_repository_impl.dart';
+import 'package:AjArin/domain/models/request/login_model.dart';
+import 'package:AjArin/domain/repositories/login_repository.dart';
+import 'package:AjArin/presentation/pages/dashboard_page.dart';
+import 'package:AjArin/presentation/pages/register_page.dart';
+import 'package:AjArin/presentation/widgets/build_text_field.dart';
 import 'package:jwt_decoder/jwt_decoder.dart';
-import 'package:tickets_app/presentation/widgets/custom_button.dart';
+import 'package:AjArin/presentation/widgets/custom_button.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({Key? key}) : super(key: key);

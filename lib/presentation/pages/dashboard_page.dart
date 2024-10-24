@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:tickets_app/data/utils/fade_animation.dart';
-import 'package:tickets_app/presentation/pages/my_reports_page.dart';
-import 'package:tickets_app/presentation/pages/register_report_page.dart';
-import 'package:tickets_app/presentation/widgets/custom_bottom_navigation_bar.dart';
-import 'package:tickets_app/presentation/widgets/menu_slides.dart';
+import 'package:AjArin/data/utils/fade_animation.dart';
+import 'package:AjArin/presentation/pages/my_reports_page.dart';
+import 'package:AjArin/presentation/pages/register_report_page.dart';
+import 'package:AjArin/presentation/pages/starter_page.dart';
+import 'package:AjArin/presentation/widgets/custom_bottom_navigation_bar.dart';
+import 'package:AjArin/presentation/widgets/menu_slides.dart';
 
 class DashboardPage extends StatefulWidget {
   final String name;
@@ -82,6 +83,13 @@ class _DashboardPageState extends State<DashboardPage> {
                 MyReportsPage(dpi: widget.dpi, name: widget.name)),
       );
     }
+
+    if (index == 2) {
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => const StarterPage()),
+      );
+    }
   }
 
   @override
@@ -100,9 +108,12 @@ class _DashboardPageState extends State<DashboardPage> {
                       const SizedBox(height: 20),
                       FadeAnimation(
                           1,
-                          Text('¡Bienvenido, ${widget.name}!',
-                              style: const TextStyle(
-                                  fontSize: 25, fontWeight: FontWeight.bold))),
+                          FittedBox(
+                            fit: BoxFit.scaleDown,
+                            child: Text('¡Bienvenido, ${widget.name}!',
+                                style: const TextStyle(
+                                    fontSize: 25, fontWeight: FontWeight.bold)),
+                          )),
                       const SizedBox(height: 10),
                       FadeAnimation(
                         1,

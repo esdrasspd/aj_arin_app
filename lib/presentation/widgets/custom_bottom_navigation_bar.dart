@@ -34,6 +34,8 @@ class _CustomBottomNavigationBarState extends State<CustomBottomNavigationBar> {
           icon: Icon(Icons.report),
           label: 'Mis Reportes',
         ),
+        BottomNavigationBarItem(
+            icon: Icon(Icons.logout), label: 'Cerrar sesión')
       ],
     );
   }

@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "809026658227",
+    "project_id": "ajarin-10d91",
+    "storage_bucket": "ajarin-10d91.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:809026658227:android:92d54a43de89443f4d75c6",
+        "android_client_info": {
+          "package_name": "com.example.AjArin"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAPFH9PHysTsFJGfItLn5jcDBZoULa17T0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

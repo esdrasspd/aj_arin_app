@@ -1,13 +1,13 @@
 import 'dart:convert';
 
 import 'package:dio/dio.dart';
-import 'package:tickets_app/data/utils/api_config.dart';
-import 'package:tickets_app/domain/datasource/ticket_datasource.dart';
-import 'package:tickets_app/domain/models/mapper/report_by_id_mapper_model.dart';
-import 'package:tickets_app/domain/models/mapper/report_mapper_model.dart';
-import 'package:tickets_app/domain/models/request/list_tickets_by_id_model.dart';
-import 'package:tickets_app/domain/models/request/register_ticket_model.dart';
-import 'package:tickets_app/domain/models/response/administrative_model.dart';
+import 'package:AjArin/data/utils/api_config.dart';
+import 'package:AjArin/domain/datasource/ticket_datasource.dart';
+import 'package:AjArin/domain/models/mapper/report_by_id_mapper_model.dart';
+import 'package:AjArin/domain/models/mapper/report_mapper_model.dart';
+import 'package:AjArin/domain/models/request/list_tickets_by_id_model.dart';
+import 'package:AjArin/domain/models/request/register_ticket_model.dart';
+import 'package:AjArin/domain/models/response/administrative_model.dart';
 
 class TicketDataSourceImpl implements TicketDataSource {
   @override

@@ -1,8 +1,8 @@
 import 'package:dio/dio.dart';
-import 'package:tickets_app/data/utils/api_config.dart';
-import 'package:tickets_app/domain/datasource/client_datasource.dart';
-import 'package:tickets_app/domain/models/request/register_client_model.dart';
-import 'package:tickets_app/domain/models/response/administrative_model.dart';
+import 'package:AjArin/data/utils/api_config.dart';
+import 'package:AjArin/domain/datasource/client_datasource.dart';
+import 'package:AjArin/domain/models/request/register_client_model.dart';
+import 'package:AjArin/domain/models/response/administrative_model.dart';
 
 class ClientDataSourceImpl implements ClientDatasource {
   @override
@@ -27,6 +27,7 @@ class ClientDataSourceImpl implements ClientDatasource {
         'FechaNacimiento': registerClientModel.birthDate,
         'NumeroTelefono': registerClientModel.numberPhone,
         'Password': registerClientModel.password,
+        'DeviceIdPushOtp': registerClientModel.deviceIdPushOtp,
       });
 
       Response response = await dio.post(
@@ -49,6 +50,35 @@ class ClientDataSourceImpl implements ClientDatasource {
       }
     } catch (e) {
       // Manejo de excepciones
+      return AdministrativeModel(
+        code: "000",
+        message: 'Exception: ${e.toString()}',
+      );
+    }
+  }
+
+  @override
+  Future<AdministrativeModel> getTerritories() async {
+    try {
+      Dio dio = Dio();
+
+      Response response = await dio.get(
+        '${ApiConfig.BASE_URL}${ApiConfig.getTerritories}',
+      );
+
+      if (response.statusCode == 200) {
+        final Map<String, dynamic> responseData = response.data;
+        return AdministrativeModel(
+          code: responseData['code'] ?? '000',
+          message: responseData['message'] ?? 'No message received',
+        );
+      } else {
+        return AdministrativeModel(
+          code: response.statusCode.toString(),
+          message: 'Error: ${response.statusMessage}',
+        );
+      }
+    } catch (e) {
       return AdministrativeModel(
         code: "000",
         message: 'Exception: ${e.toString()}',

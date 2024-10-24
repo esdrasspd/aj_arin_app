@@ -1,7 +1,7 @@
-import 'package:tickets_app/data/utils/api_config.dart';
-import 'package:tickets_app/domain/datasource/login_data_source.dart';
-import 'package:tickets_app/domain/models/request/login_model.dart';
-import 'package:tickets_app/domain/models/response/administrative_model.dart';
+import 'package:AjArin/data/utils/api_config.dart';
+import 'package:AjArin/domain/datasource/login_data_source.dart';
+import 'package:AjArin/domain/models/request/login_model.dart';
+import 'package:AjArin/domain/models/response/administrative_model.dart';
 import 'package:dio/dio.dart';
 
 class LoginDataSourceImpl implements LoginDataSource {

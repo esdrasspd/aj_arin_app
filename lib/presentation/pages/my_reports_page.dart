@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
-import 'package:tickets_app/data/datasource/ticket_datasource_impl.dart';
-import 'package:tickets_app/data/repositories/ticket_repository_impl.dart';
-import 'package:tickets_app/domain/models/mapper/report_mapper_model.dart';
-import 'package:tickets_app/domain/models/request/list_tickets_by_id_model.dart';
-import 'package:tickets_app/domain/repositories/ticket_repository.dart';
-import 'package:tickets_app/presentation/pages/dashboard_page.dart';
-import 'package:tickets_app/presentation/pages/report_info_page.dart';
-import 'package:tickets_app/presentation/widgets/custom_bottom_navigation_bar.dart';
+import 'package:AjArin/data/datasource/ticket_datasource_impl.dart';
+import 'package:AjArin/data/repositories/ticket_repository_impl.dart';
+import 'package:AjArin/domain/models/mapper/report_mapper_model.dart';
+import 'package:AjArin/domain/models/request/list_tickets_by_id_model.dart';
+import 'package:AjArin/domain/repositories/ticket_repository.dart';
+import 'package:AjArin/presentation/pages/dashboard_page.dart';
+import 'package:AjArin/presentation/pages/report_info_page.dart';
+import 'package:AjArin/presentation/pages/starter_page.dart';
+import 'package:AjArin/presentation/widgets/custom_bottom_navigation_bar.dart';
 
 class MyReportsPage extends StatefulWidget {
   final String dpi;
@@ -49,6 +50,12 @@ class _MyReportsPageState extends State<MyReportsPage> {
         MaterialPageRoute(
             builder: (context) =>
                 MyReportsPage(dpi: widget.dpi, name: widget.name)),
+      );
+    }
+    if (index == 2) {
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => const StarterPage()),
       );
     }
   }

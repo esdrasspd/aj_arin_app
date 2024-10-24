@@ -1,11 +1,11 @@
 import 'dart:convert'; // Necesario para base64Decode
 import 'package:flutter/material.dart';
-import 'package:tickets_app/data/datasource/ticket_datasource_impl.dart';
-import 'package:tickets_app/data/repositories/ticket_repository_impl.dart';
-import 'package:tickets_app/domain/repositories/ticket_repository.dart';
-import 'package:tickets_app/domain/models/mapper/report_by_id_mapper_model.dart';
-import 'package:tickets_app/presentation/pages/my_reports_page.dart';
-import 'package:tickets_app/presentation/widgets/build_text_field.dart'; // Asegúrate de tener esta entidad
+import 'package:AjArin/data/datasource/ticket_datasource_impl.dart';
+import 'package:AjArin/data/repositories/ticket_repository_impl.dart';
+import 'package:AjArin/domain/repositories/ticket_repository.dart';
+import 'package:AjArin/domain/models/mapper/report_by_id_mapper_model.dart';
+import 'package:AjArin/presentation/pages/my_reports_page.dart';
+import 'package:AjArin/presentation/widgets/build_text_field.dart'; // Asegúrate de tener esta entidad
 
 class ReportInfoPage extends StatefulWidget {
   final String dpi;
@@ -187,7 +187,10 @@ class _ReportInfoPageState extends State<ReportInfoPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Información del reporte'),
+        title: const FittedBox(
+          fit: BoxFit.scaleDown,
+          child: Text('Información del reporte'),
+        ),
         actions: [
           IconButton(
             icon: const Icon(Icons.edit),

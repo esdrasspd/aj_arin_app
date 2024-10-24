@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:tickets_app/data/utils/fade_animation.dart';
-import 'package:tickets_app/presentation/pages/login_page.dart';
+import 'package:AjArin/data/utils/fade_animation.dart';
+import 'package:AjArin/presentation/pages/login_page.dart';
 
 class StarterPage extends StatefulWidget {
   const StarterPage({super.key});

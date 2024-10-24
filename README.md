@@ -1,4 +1,4 @@
-# tickets_app
+# AjArin
 
 A new Flutter project.
 

@@ -1,6 +1,6 @@
 {
-    "name": "tickets_app",
-    "short_name": "tickets_app",
+    "name": "AjArin",
+    "short_name": "AjArin",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#0175C2",

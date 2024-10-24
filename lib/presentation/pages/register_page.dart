@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
-import 'package:tickets_app/data/datasource/client_datasource_impl.dart';
-import 'package:tickets_app/data/repositories/client_repository_impl.dart';
-import 'package:tickets_app/domain/models/request/register_client_model.dart';
-import 'package:tickets_app/domain/repositories/client_repository.dart';
-import 'package:tickets_app/presentation/widgets/build_text_field.dart';
-import 'package:tickets_app/presentation/widgets/custom_button.dart';
-import 'package:tickets_app/presentation/widgets/date_picker_field.dart';
+import 'package:onesignal_flutter/onesignal_flutter.dart';
+import 'package:AjArin/data/datasource/client_datasource_impl.dart';
+import 'package:AjArin/data/repositories/client_repository_impl.dart';
+import 'package:AjArin/domain/models/request/register_client_model.dart';
+import 'package:AjArin/domain/repositories/client_repository.dart';
+import 'package:AjArin/presentation/widgets/build_text_field.dart';
+import 'package:AjArin/presentation/widgets/custom_button.dart';
+import 'package:AjArin/presentation/widgets/date_picker_field.dart';
+import 'dart:convert';
 
 class RegisterPage extends StatefulWidget {
   const RegisterPage({Key? key}) : super(key: key);
@@ -30,12 +32,61 @@ class _RegisterPageState extends State<RegisterPage> {
 
   late final ClientRepository _clientRepository;
   bool _isLoading = false; // Estado de carga
+  List<Map<String, String>> _neighborhoods = [];
+  bool _isDropdownLoading = true;
 
   @override
   void initState() {
     super.initState();
     _clientRepository =
         ClientRepositoryImpl(clientDatasource: ClientDataSourceImpl());
+    _getTerritories();
+  }
+
+  Future<void> _getTerritories() async {
+    setState(() {
+      _isDropdownLoading = true; // Muestra el círculo de carga
+    });
+
+    final result = await _clientRepository.getTerritories();
+
+    if (result.code == '200') {
+      var neighborhoodsData = jsonDecode(
+          result.message); // Convierte el JSON en una lista de objetos
+
+      if (neighborhoodsData is List) {
+        List<Map<String, String>> parsedNeighborhoods = neighborhoodsData
+            .map((item) => {
+                  "Id": item["Id"].toString(),
+                  "Nombre": item["Nombre"].toString(),
+                })
+            .toList();
+
+        setState(() {
+          _neighborhoods = parsedNeighborhoods;
+          _isDropdownLoading = false; // Oculta el círculo de carga
+        });
+      } else {
+        setState(() {
+          _isDropdownLoading = false;
+        });
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Error: Los datos recibidos no son válidos'),
+          ),
+        );
+      }
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Error: ${result.message}'),
+        ),
+      );
+
+      setState(() {
+        _isDropdownLoading = false; // Oculta el círculo de carga aunque falle
+      });
+    }
   }
 
   @override
@@ -53,10 +104,19 @@ class _RegisterPageState extends State<RegisterPage> {
 
   Future<String> _registerClient() async {
     if (_formKey.currentState?.validate() ?? false) {
-      // Si el formulario es válido
       setState(() {
         _isLoading = true;
       });
+
+      // Obtener el playerId de OneSignal
+      String? playerId;
+      try {
+        var deviceState = await OneSignal.shared.getDeviceState();
+        playerId = deviceState?.userId;
+      } catch (e) {
+        playerId = ''; // Maneja el error en caso de que OneSignal falle
+        print("Error al obtener el playerId: $e");
+      }
 
       final registerClientModel = RegisterClientModel(
         names: _namesController.text,
@@ -67,6 +127,7 @@ class _RegisterPageState extends State<RegisterPage> {
         numberPhone: _numberPhoneController.text,
         password: _passwordController.text,
         confirmPassword: _confirmPasswordController.text,
+        deviceIdPushOtp: playerId ?? '', // <-- Añadir playerId al modelo
       );
 
       final result =
@@ -242,25 +303,30 @@ class _RegisterPageState extends State<RegisterPage> {
         ),
         child: Padding(
           padding: const EdgeInsets.only(left: 20.0),
-          child: DropdownButtonFormField<String>(
-            decoration: InputDecoration(
-              labelText: 'Barrio de residencia',
-              labelStyle: TextStyle(color: Colors.teal.shade900),
-              border: InputBorder.none,
-              contentPadding:
-                  const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
-            ),
-            items: const [
-              DropdownMenuItem(
-                child: Text('Zona 1'),
-                value: '1',
-              ),
-              // Agrega más opciones aquí
-            ],
-            onChanged: (value) {
-              _residenceNeighborhoodController.text = value ?? '';
-            },
-          ),
+          child: _isDropdownLoading
+              ? Center(
+                  child:
+                      CircularProgressIndicator()) // Muestra el loader si está cargando
+              : DropdownButtonFormField<String>(
+                  decoration: InputDecoration(
+                    labelText: 'Barrio de residencia',
+                    labelStyle: TextStyle(color: Colors.teal.shade900),
+                    border: InputBorder.none,
+                    contentPadding: const EdgeInsets.symmetric(
+                        horizontal: 15, vertical: 10),
+                  ),
+                  items: _neighborhoods.map((neighborhood) {
+                    return DropdownMenuItem(
+                      value: neighborhood['Id'],
+                      child: Text(neighborhood['Nombre']!),
+                    );
+                  }).toList(),
+                  onChanged: (value) {
+                    setState(() {
+                      _residenceNeighborhoodController.text = value ?? '';
+                    });
+                  },
+                ),
         ),
       ),
     );

@@ -9,7 +9,7 @@
 
     <application
         android:usesCleartextTraffic="true"
-        android:label="tickets_app"
+        android:label="AjArin"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
         
